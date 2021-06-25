@@ -1,0 +1,12 @@
+CHECKLIST
+	
+1.	Umar, Erandi
+	a.	Get coordinates
+	b.	Get pop density data (and other demographics if possible. Even covid if we can)
+	c.	Find optimal segmenting area based on demographic information and visual observations
+	d.	Look into unsupervised clustering methods for 2-D data.
+
+2.	Rumali
+	a.	get contours for each colormap.
+	b.	try to remove the grounds, large white fields manually (can be done later automatically)
+	c.	have a metric for each white density in each square segment. (similar to a supervised clustering)
