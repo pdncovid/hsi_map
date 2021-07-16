@@ -1,5 +1,4 @@
 import numpy as np
-
 from map_functions import load_maps, view_maps
 from data_functions import min_max_normalise
 
