@@ -1,4 +1,8 @@
-from matplotlib import pyplot as plt
+import pandas as pd
+import descartes
+import geopandas as gpd
+from shapely.geometry import Point, Polygon
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -47,3 +51,8 @@ def merge(data):
     plt.figure()
     plt.imshow(merged)
     plt.show()
+
+
+def geopandas_kandy():
+
+

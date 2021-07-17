@@ -6,8 +6,7 @@ import functions
 data = read_mat("refImage.mat")
 
 # functions.map_gps_crd(data)
-functions.merge(data)
-
+# functions.merge(data)
 
 
 
