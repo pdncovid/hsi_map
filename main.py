@@ -1,21 +1,18 @@
 import numpy as np
-from map_functions import load_maps, view_maps
-from data_functions import min_max_normalise
+from fn.map_functions import load_maps, view_maps
+from fn.data_functions import min_max_normalise, img_sample
 
 folder = 'mat_files'
 # files = ['imageKandy', 'refImage']
-files = ['imageKandy']
+file = 'imageKandy'
 
 
 def main():
-    dc = dict()
-    for file in files:
-        dc[file] = load_maps(folder, file, view=True)
-        dc_init = dc[file]
-        dc_norm = min_max_normalise(dc_init, 'all')
-        array_init = np.array(list(dc_init.values()))
-        array_norm = np.array(list(dc_norm.values()))
-        print('haha')
+    [stacked_arr, field_names] = load_maps(folder, file, view=False, out_array=True)
+    data1 = np.copy(stacked_arr)
+    data2 = img_sample(data1, 100, stacked=True)
+    print('original data', data1.shape)
+    print('sampled data', data2.shape)
 
 
 if __name__ == "__main__":

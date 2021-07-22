@@ -1,4 +1,5 @@
 from scipy.io import loadmat
+import numpy as np
 import matplotlib.pyplot as plt
 import math
 
@@ -19,7 +20,7 @@ def view_maps(dict_, fig_name):
     return
 
 
-def load_maps(folder='mat_files', file='imageKandy', view=False):
+def load_maps(folder='mat_files', file='imageKandy', view=False, out_array=False):
     if '.mat' in file:
         file = file.replace('.mat', '')
 
@@ -34,4 +35,8 @@ def load_maps(folder='mat_files', file='imageKandy', view=False):
     if view:
         view_maps(struct_dc, file)
 
-    return struct_dc
+    if out_array:
+        _arr = list(struct_dc.values())
+        struct_dc = np.array(_arr)
+
+    return [struct_dc, field_names]
