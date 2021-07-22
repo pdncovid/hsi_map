@@ -1,6 +1,5 @@
-import numpy as np
-from fn.map_functions import load_maps, view_maps
-from fn.data_functions import min_max_normalise, img_sample
+from fn.data_functions import samples_get, samples_zeros
+from fn.map_functions import load_maps
 
 folder = 'mat_files'
 # files = ['imageKandy', 'refImage']
@@ -8,11 +7,10 @@ file = 'imageKandy'
 
 
 def main():
-    [stacked_arr, field_names] = load_maps(folder, file, view=False, out_array=True)
-    data1 = np.copy(stacked_arr)
-    data2 = img_sample(data1, 100, stacked=True)
-    print('original data', data1.shape)
-    print('sampled data', data2.shape)
+    [stacked_arr, _] = load_maps(folder, file, view=False, out_array=True)
+    rows = 50
+    data_sampled = samples_get(stacked_arr[0], rows, view=True, print_=True)
+    samples_zeros(data_sampled, view=True, print_=True)
 
 
 if __name__ == "__main__":
