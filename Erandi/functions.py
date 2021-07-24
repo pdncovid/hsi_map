@@ -54,5 +54,12 @@ def merge(data):
 
 
 def geopandas_kandy():
+    gpd_df = gpd.read_file(r'C:\Users\Erandi\Documents\GitHub\hsi_map\Erandi\KANDY\POLYGONfileName.shp')
+    # df = pd.read_csv(r'C:\Users\Erandi\Documents\GitHub\hsi_map\Erandi\area_of_interest_details.csv')
+    gpd_df.plot()
+    plt.show()
+
+    return gpd_df
+
 
 
