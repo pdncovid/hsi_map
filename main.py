@@ -1,21 +1,16 @@
-import numpy as np
-from map_functions import load_maps, view_maps
-from data_functions import min_max_normalise
+from fn.data_functions import samples_get, samples_zeros
+from fn.map_functions import load_maps
 
 folder = 'mat_files'
 # files = ['imageKandy', 'refImage']
-files = ['imageKandy']
+file = 'imageKandy'
 
 
 def main():
-    dc = dict()
-    for file in files:
-        dc[file] = load_maps(folder, file, view=True)
-        dc_init = dc[file]
-        dc_norm = min_max_normalise(dc_init, 'all')
-        array_init = np.array(list(dc_init.values()))
-        array_norm = np.array(list(dc_norm.values()))
-        print('haha')
+    [stacked_arr, _] = load_maps(folder, file, view=False, out_array=True)
+    rows = 50
+    data_sampled = samples_get(stacked_arr[0], rows, view=True, print_=True)
+    samples_zeros(data_sampled, view=True, print_=True)
 
 
 if __name__ == "__main__":
