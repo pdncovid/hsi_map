@@ -6,20 +6,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def map_gps_crd(data):
-    print(data)
-    points = [80.602, 7.332, 80.673, 7.254]
-    x_ticks = map(lambda x: round(x, 4), np.linspace(points[0], points[2], num=10))
-    y_ticks = map(lambda x: round(x, 4), np.linspace(points[3], points[1], num=11))
-    y_ticks = sorted(y_ticks, reverse=True)
+def map_gps_crd(data, points):
+    plt.imshow(data["refImage"]['nir2'], extent=[points[0], points[2], points[3], points[1]])
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.grid()
+    plt.show()
 
-    fig, axis1 = plt.subplots(figsize=(10, 10))
-    axis1.imshow(data["refImage"]['nir2'])
-    axis1.set_xlabel('Longitude')
-    axis1.set_ylabel('Latitude')
-    axis1.set_xticklabels(x_ticks, rotation=70)
-    axis1.set_yticklabels(y_ticks)
-    axis1.grid()
+
+def map_places(data, points):
+
+    places = pd.read_csv('highly_affected_areas.csv')
+    ar = np.empty_like(data["refImage"]['nir2'])
+    plt.imshow(ar)
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.xlim(points[0], points[2])
+    plt.ylim(points[3], points[1])
+    plt.plot(places['Longitude'], places['Latitude'], 'ro', marker='o', color='w')
+    plt.grid()
     plt.show()
 
 
@@ -60,6 +65,3 @@ def geopandas_kandy():
     plt.show()
 
     return gpd_df
-
-
-
