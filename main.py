@@ -7,9 +7,9 @@ file = 'imageKandy'
 
 
 def main():
-    [stacked_arr, _] = load_maps(folder, file, view=False, out_array=True)
-    rows = 50
-    data_sampled = samples_get(stacked_arr[0], rows, view=True, print_=True)
+    [stacked_arr, names] = load_maps(folder, file, view=True, out_array=True)
+    rows = [100, 100]
+    data_sampled = samples_get(stacked_arr, rows, view=True, print_=True)
     samples_zeros(data_sampled, view=True, print_=True)
 
 

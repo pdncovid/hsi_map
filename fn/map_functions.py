@@ -5,6 +5,8 @@ import math
 
 
 def view_maps(dict_, fig_name):
+    """Function to view a map on matplotlib. Inputs a dictionary.
+    TODO: edit to input array and string"""
     field_names = list(dict_.keys())
     cols = 4
     rows = math.ceil(len(field_names) / cols)
@@ -21,6 +23,10 @@ def view_maps(dict_, fig_name):
 
 
 def load_maps(folder='mat_files', file='imageKandy', view=False, out_array=False):
+    """Loads the matlab file and returns 2 values where:
+    field_names=str is the name of each image (eg: CoastalBlue)
+    struct_dc=np.ndarray is the 2D array corresponding to each name OR
+    struct_dc=dict where key=field_names and value=2D array (depending on out_array)"""
     if '.mat' in file:
         file = file.replace('.mat', '')
 
