@@ -7,6 +7,10 @@ import numpy as np
 
 
 def map_gps_crd(data, points):
+    """please try to generalise these functions as much as possible.
+    Send 'places, refImage, nir2' as kwargs.
+    Then if one wants to map something else they could do it as well.
+    Otherwise we'd need to have another function for 'CoastalBlue' etc."""
     plt.imshow(data["refImage"]['nir2'], extent=[points[0], points[2], points[3], points[1]])
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
@@ -15,7 +19,10 @@ def map_gps_crd(data, points):
 
 
 def map_places(data, points):
-
+    """please try to generalise these functions as much as possible.
+    Send 'places, refImage, nir2' as kwargs.
+    Then if one wants to map something else they could do it as well.
+    Otherwise we'd need to have another function for 'CoastalBlue' etc."""
     places = pd.read_csv('highly_affected_areas.csv')
     ar = np.empty_like(data["refImage"]['nir2'])
     plt.imshow(ar)
