@@ -116,8 +116,8 @@ def get_eigen(mat, sig=None, absolute=True, eigengap_only=False, view=True):
         return eigen_gap, eig_val, eig_vec
 
 
-def sigma_sweep(test_sample, k, cluster=False, sig_range=None, von_luxburg=False, abs_eig=True, view_sample=False,
-                view_sig=False):
+def sigma_optimum(test_sample, k, sig_range=None, cluster=False, von_luxburg=False, abs_eig=True, view_sample=False,
+                  view_sig=False, view_clusters=False):
     """In this function, we set 'k' which is the amount of clusters we need, and find the
     OPTIMAL SIGMA value for that k, where the sigma corresponding to the LARGEST Kth EIGEN-GAP wins.
     It makes the most sense compared to just going over everything for now because in some cases
@@ -125,7 +125,66 @@ def sigma_sweep(test_sample, k, cluster=False, sig_range=None, von_luxburg=False
 
     if sig_range is None:
         sig_range = [0.1, 0.3]
+    sig_list = np.linspace(sig_range[0], sig_range[1], 10)
 
+    eig_gaps, eig_vecs, eig_vals = sigma_sweep(test_sample, sig_range, von_luxburg, abs_eig)
+
+    if cluster:
+        for num in range(len(eig_vecs)):
+            eigen_vec = eig_vecs[num]
+            # extracting the 'k' eigenvectors corresponding to the optimal mode k
+            mode_x = eigen_vec[:, 0:k]
+            mode_y = np.zeros_like(mode_x)
+            for row in range(mode_x.shape[0]):
+                mode_y[row, :] = mode_x[row, :] / (np.sum(mode_x[row, :] ** 2) ** 0.5)
+
+            k_mean = KMeans(n_clusters=k)
+            k_mean.fit(mode_y)
+
+            targets = k_mean.labels_.reshape(-1)
+            one_hot_targets = np.eye(k)[targets].transpose()
+            one_hot_rank = np.sum(one_hot_targets, axis=-1)
+            order = one_hot_rank.argsort()
+            ranks = order.argsort()
+            one_hot_edited = np.zeros_like(one_hot_targets)
+            for i in range(one_hot_targets.shape[0]):
+                one_hot_edited[i, :] = one_hot_targets[ranks[i], :]
+            one_hot_2d = np.reshape(one_hot_edited,
+                                    (one_hot_targets.shape[0], test_sample.shape[-2], test_sample.shape[-1]))
+            if view_clusters:
+                cols = 4
+                rows = math.ceil(k / cols)
+                plt.figure(figsize=(cols * 4, rows * 4))
+                for i in range(k):
+                    plt.subplot(rows, cols, i + 1)
+                    plt.imshow(one_hot_2d[i, :, :])
+                    plt.title('unsupervised cluster label = ' + str(i + 1))
+                plt.suptitle('unsupervised clusters for k=' + str(k) + ' and \u03C3=' + str(round(sig_list[num], 2)))
+                plt.show()
+
+    sig_opt = sig_list[np.argmax(eig_gaps[:, k])]
+    print('optimal \u03C3 value for (k=' + str(k) + ') is: ' + str(round(sig_opt, 3)))
+    print('the corresponding eigen-gap value is: ' + str(round(np.amax(eig_gaps), 3)))
+
+    if view_sample:
+        col = 4
+        row = math.ceil(test_sample.shape[0] / col)
+        plt.figure(figsize=(col * 4, row * 4))
+        for i in range(test_sample.shape[0]):
+            plt.subplot(row, col, i + 1)
+            plt.imshow(test_sample[i, :, :])
+        plt.show()
+
+    if view_sig:
+        plt.figure(figsize=(6, 4))
+        plt.stem(sig_list, eig_gaps[:, k])
+        plt.ylabel('eigen-gap for k = ' + str(k)), plt.xlabel('\u03C3')
+        plt.show()
+
+    return sig_opt
+
+
+def sigma_sweep(test_sample, sig_range, von_luxburg, abs_eig):
     # set the diagonal of the affinity mat to zero or not
     if von_luxburg:
         diag_zero = False
@@ -133,9 +192,8 @@ def sigma_sweep(test_sample, k, cluster=False, sig_range=None, von_luxburg=False
     else:
         diag_zero = True
         print('computation according to Ng and Weiss. Diagonal elements of the Affinity matrix (A) will be zero')
-
     # some initializations for later analysis
-    eig_gaps, sig_labels, cluster_labels = [], [], []
+    eig_gaps, eig_vals, eig_vecs = [], [], []
 
     sig_list = np.linspace(sig_range[0], sig_range[1], 10)
 
@@ -151,60 +209,8 @@ def sigma_sweep(test_sample, k, cluster=False, sig_range=None, von_luxburg=False
         # computing eigenvalues and eigen-gaps
         # TODO: sort the eigenvectors by largest magnitude of eigenvalues
         eigen_gap, eigen_val, eigen_vec = get_eigen(laplacian, sig, absolute=abs_eig, eigengap_only=False, view=False)
-        eig_gaps.append(eigen_gap[k])
+        eig_gaps.append(eigen_gap)
+        eig_vecs.append(eigen_vec)
+        eig_vals.append(eigen_val)
 
-        if cluster:
-            # extracting the 'k' eigenvectors corresponding to the optimal mode k
-            mode_x = eigen_vec[:, 0:k]
-            mode_y = np.zeros_like(mode_x)
-            for row in range(mode_x.shape[0]):
-                mode_y[row, :] = mode_x[row, :] / (np.sum(mode_x[row, :] ** 2) ** 0.5)
-
-            k_mean = KMeans(n_clusters=k)
-            k_mean.fit(mode_y)
-
-            targets = k_mean.labels_.reshape(-1)
-            one_hot_targets = np.eye(k)[targets].transpose()
-            one_hot_rank = np.sum(one_hot_targets, axis=-1)
-            order = one_hot_rank.argsort()
-            ranks = order.argsort()
-
-            one_hot_edited = np.zeros_like(one_hot_targets)
-            for i in range(one_hot_targets.shape[0]):
-                one_hot_edited[i, :] = one_hot_targets[ranks[i], :]
-
-            one_hot_2d = np.reshape(one_hot_edited,
-                                    (one_hot_targets.shape[0], test_sample.shape[-2], test_sample.shape[-1]))
-
-            cols = 4
-            rows = math.ceil(k / cols)
-            plt.figure(figsize=(cols * 4, rows * 4))
-            for i in range(k):
-                plt.subplot(rows, cols, i + 1)
-                plt.imshow(one_hot_2d[i, :, :])
-                plt.title('unsupervised cluster label = ' + str(i + 1))
-            plt.suptitle('unsupervised clusters for k=' + str(k) + ' and \u03C3=' + str(round(sig, 2)))
-            plt.show()
-
-    """sigma sweep completed >>>"""
-
-    sig_opt = sig_list[np.argmax(eig_gaps)]
-    print('optimal \u03C3 value for (k=' + str(k) + ') is: ' + str(round(sig_opt, 3)))
-    print('the corresponding eigen-gap value is: ' + str(round(np.amax(eig_gaps), 3)))
-
-    if view_sample:
-        col = 4
-        row = math.ceil(test_sample.shape[0] / col)
-        plt.figure(figsize=(col * 4, row * 4))
-        for i in range(test_sample.shape[0]):
-            plt.subplot(row, col, i + 1)
-            plt.imshow(test_sample[i, :, :])
-        plt.show()
-
-    if view_sig:
-        plt.figure(figsize=(6, 4))
-        plt.stem(sig_list, eig_gaps)
-        plt.ylabel('eigen-gap for k = ' + str(k)), plt.xlabel('\u03C3')
-        plt.show()
-
-    return sig_opt
+    return np.array(eig_gaps), np.array(eig_vecs), np.array(eig_vals)
