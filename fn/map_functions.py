@@ -27,6 +27,7 @@ def load_maps(folder='mat_files', file='imageKandy', view=False, out_array=False
     field_names=str is the name of each image (eg: CoastalBlue)
     struct_dc=np.ndarray is the 2D array corresponding to each name OR
     struct_dc=dict where key=field_names and value=2D array (depending on out_array)"""
+    print('loading maps...')
     if '.mat' in file:
         file = file.replace('.mat', '')
 
@@ -46,3 +47,17 @@ def load_maps(folder='mat_files', file='imageKandy', view=False, out_array=False
         struct_dc = np.array(_arr)
 
     return [struct_dc, field_names]
+
+
+def plot_sample(test_sample):
+    col = 4
+    row = math.ceil(test_sample.shape[0] / col)
+    plt.figure(figsize=(col * 4, row * 4))
+    for i in range(test_sample.shape[0]):
+        plt.subplot(row, col, i + 1)
+        plt.imshow(test_sample[i, :, :])
+    plt.suptitle(
+        'Windowed hyper-spectral image\nResolution: ' + str(test_sample.shape[-1]) + ' * ' + str(test_sample.shape[1]))
+    plt.show()
+
+    return

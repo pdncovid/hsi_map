@@ -1,9 +1,9 @@
-*.eps
-*.jpg
-*.png
-*.jpeg
-*.gif
-*.bmp
+#*.eps
+#*.jpg
+#*.png
+#*.jpeg
+#*.gif
+#*.bmp
 *.mat
 *.m
 logs/
