@@ -158,3 +158,18 @@ def samples_zeros(data, view=False, print_=False):
         plot_samples(data__, title, 30, 5)
 
     return data__, zero_idx
+
+
+def convert_one_hot(labels, k, rank=True):
+    targets = labels.reshape(-1)
+    one_hot_ = np.eye(k)[targets].transpose()
+    if not rank:
+        return one_hot_
+    else:
+        temp = np.sum(one_hot_, axis=-1)
+        order = temp.argsort()
+        ranks = order.argsort()
+        one_hot_ranked = np.zeros_like(one_hot_)
+        for i in range(one_hot_.shape[0]):
+            one_hot_ranked[i, :] = one_hot_[ranks[i], :]
+        return one_hot_ranked
