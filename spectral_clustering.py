@@ -11,7 +11,8 @@ from sklearn.cluster import KMeans
 
 from fn.data_functions import samples_get, samples_zeros
 from fn.map_functions import load_maps
-from fn.spectral_functions import get_distance, get_affinity, get_laplacian, get_eigen, sigma_optimum, cluster_spectral
+from fn.spectral_functions import get_distance, get_affinity, get_laplacian, get_eigen, sigma_optimum, cluster_spectral, \
+    cluster_kmeans
 
 folder = 'mat_files'
 # files = ['imageKandy', 'refImage']
@@ -31,15 +32,19 @@ def main():
 
     # are we following Von Luxburg (True) or Ng and Weiss (False)?
     method = 'Ng and Weiss'
+    # method = 'Von Luxburg'
 
     # set our desired number of clusters
-    k = 5
-    sig_opt = sigma_optimum(test_sample, k, sig_range=[0.15, 0.40], cluster=False, method=method, abs_eig=True,
+    k = 4
+    sig_opt = sigma_optimum(test_sample, k, sig_range=[0.3, 0.6], cluster=False, method=method, abs_eig=False,
                             view_sample=True, view_sig=True, view_clusters=False)
 
-    # sig = 0.289
-    #
-    # cluster_spectral(test_sample, k, sig, view_sample=True, view_clusters=True)
+    sig_opt = 0.433
+
+    # cluster_spectral(test_sample, k, sig_opt, method=method, view_sample=False, view_clusters=True)
+    # labels_2d, one_hot_2d = cluster_kmeans(test_sample, k, view_clusters=True)
+
+    pass
 
 
 if __name__ == "__main__":

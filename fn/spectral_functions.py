@@ -24,6 +24,7 @@ def get_distance(mat, normalize=True, view=True):
     for var1 in range(mat.shape[-1]):
         for var2 in range(mat.shape[-1]):
             distance_mat[var1, var2] = np.sum((mat[:, var1] - mat[:, var2]) ** 2) ** 0.5
+            # distance_mat[var1, var2] = np.sqrt(np.sum(np.square(mat[:, var1] - mat[:, var2])))
 
     if view:
         plt.figure(figsize=(4, 4))
@@ -130,7 +131,7 @@ def sigma_optimum(test_sample, k, sig_range=None, cluster=False, method='Weiss',
     sig_list = np.linspace(sig_range[0], sig_range[1], 10)
 
     eig_gaps, eig_vecs, eig_vals = sigma_sweep(test_sample, sig_range, method, abs_eig)
-    sig_opt = sig_list[np.argmax(eig_gaps[:, k])]
+    sig_opt = sig_list[np.argmax(np.abs(eig_gaps[:, k]))]
 
     if cluster:
         for num in range(len(sig_list)):
@@ -211,8 +212,24 @@ def cluster_spectral(test_sample, k, sig, eigen_vec=None, return_2d=True, method
     for row in range(mode_x.shape[0]):
         mode_y[row, :] = mode_x[row, :] / (np.sum(mode_x[row, :] ** 2) ** 0.5)
 
+    title = 'Algorithm: Spectral Clustering according to ' + method + '\nunsupervised clusters for k=' + str(
+        k) + 'and \u03C3=' + str(round(sig, 3))
+
+    labels, labels_one_hot = cluster_kmeans(test_sample, k, feature_mat=mode_y, return_2d=True,
+                                            view_clusters=view_clusters,
+                                            view_sample=view_sample, title=title)
+
+    return labels, labels_one_hot
+
+
+def cluster_kmeans(test_sample, k, feature_mat=None, return_2d=True, view_clusters=False, view_sample=False,
+                   title=None):
+    if feature_mat is None:
+        feature_mat = np.transpose(test_sample, (1, 2, 0))
+        feature_mat = np.reshape(feature_mat, (-1, feature_mat.shape[-1]))
+
     k_mean = KMeans(n_clusters=k)
-    k_mean.fit(mode_y)
+    k_mean.fit(feature_mat)
 
     cluster_labels = k_mean.labels_
 
@@ -225,6 +242,8 @@ def cluster_spectral(test_sample, k, sig, eigen_vec=None, return_2d=True, method
         plot_sample(test_sample)
 
     if view_clusters:
+        if title is None:
+            title = 'k-means clustering where k=' + str(k)
         cols = 4
         rows = math.ceil((k + 1) / cols)
         plt.figure(figsize=(cols * 4, rows * 4))
@@ -236,11 +255,7 @@ def cluster_spectral(test_sample, k, sig, eigen_vec=None, return_2d=True, method
             else:
                 plt.imshow(one_hot_2d[i, :, :])
                 plt.title('cluster label = ' + str(i + 1))
-        plt.suptitle('Algorithm: Spectral Clustering according to ' + method + '\nunsupervised clusters for k=' + str(
-            k) + 'and \u03C3=' + str(round(sig, 2)))
+        plt.suptitle(title)
         plt.show()
 
-    if return_2d:
-        return labels_2d, one_hot_2d
-    else:
-        return cluster_labels, one_hot_ranked
+    return labels_2d, one_hot_2d
