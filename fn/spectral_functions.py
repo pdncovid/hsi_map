@@ -5,6 +5,7 @@ import random
 import math
 
 from sklearn.cluster import KMeans
+from scipy.fftpack import fft, dctn, idctn
 
 from fn.data_functions import convert_one_hot
 from fn.map_functions import plot_sample
@@ -259,3 +260,52 @@ def cluster_kmeans(test_sample, k, feature_mat=None, return_2d=True, view_cluste
         plt.show()
 
     return labels_2d, one_hot_2d
+
+
+def dct_image(img1, scale_down, filter_size=8, view=False, title=None):
+    def dct_single(img, scale, filter_=8, view_=False, title_=None):
+        if title_ is None:
+            title_ = str(scale_down) + 'x compressed image after DCT-II\nFilter size: ' + str(filter_)
+        else:
+            pass
+
+        sample_size = math.floor(filter_ / scale_down)
+
+        x_len = int(filter_ * math.floor(img.shape[1] / filter_))
+        y_len = int(filter_ * math.floor(img.shape[0] / filter_))
+
+        img = img[0:y_len, 0:x_len]
+        samples_x = int(img.shape[1] / filter_)
+        samples_y = int(img.shape[0] / filter_)
+
+        img_new = np.zeros((samples_y * sample_size, samples_x * sample_size))
+
+        for i in range(samples_y):
+            for j in range(samples_x):
+                img_seg = img[filter_ * i: filter_ * (i + 1), filter_ * j: filter_ * (j + 1)]
+                dct_seg = dctn(img_seg)
+                img_sampled = idctn(dct_seg, shape=(sample_size, sample_size))
+                img_sampled = img_sampled * np.mean(img_seg) / np.mean(img_sampled)
+                img_new[sample_size * i: sample_size * (i + 1), sample_size * j: sample_size * (j + 1)] = img_sampled
+
+        if view_:
+            plt.figure(figsize=(8, 4))
+            plt.subplot(121), plt.imshow(img)
+            plt.title('Original image')
+            plt.clim(0, 1)
+            plt.subplot(122), plt.imshow(img_new)
+            plt.title(title_)
+            plt.clim(0, 1)
+            plt.show()
+
+        return img_new
+
+    if len(img1.shape) == 3:
+        dct_multi = []
+        for i in range(img1.shape[0]):
+            dct_multi.append(dct_single(img1[i, :, :], scale_down, filter_size, view, title))
+        compressed_image = np.array(dct_multi)
+    else:
+        compressed_image = dct_single(img1, scale_down, filter_size, view, title)
+
+    return compressed_image
