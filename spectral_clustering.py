@@ -13,7 +13,7 @@ from scipy.fftpack import fft, dctn, idctn
 
 from fn.data_functions import samples_get, samples_zeros
 from fn.map_functions import load_maps
-from fn.spectral_functions import get_distance, get_affinity, get_laplacian, get_eigen, sigma_optimum, cluster_spectral, \
+from fn.spectral_functions import get_affinity, get_laplacian, get_eigen, sigma_optimum, cluster_spectral, \
     cluster_kmeans, dct_image
 
 folder = 'mat_files'
@@ -28,13 +28,12 @@ def main():
     # image under-sampling
 
     # TRYING 2D-DCT (SEEMS OK)
-    """
+
     img1 = stacked_arr[:, 1750:2250, 1750:2250]
     img1 = img1 / np.amax(img1)
 
-    img_new = dct_image(img1, 8, 32, view=True)
+    img_new = dct_image(img1, 8, 32, view=False)
     test_sample = np.copy(img_new)
-    """
 
     # TRYING 2D-FFT (FAILED)
     """
@@ -97,18 +96,19 @@ def main():
     # CLUSTERING PARTS
     """
     # are we following Von Luxburg (True) or Ng and Weiss (False)?
+    """
     method = 'Ng and Weiss'
     # method = 'Von Luxburg'
     # set our desired number of clusters
-    k = 4
+    k = 3
     # sig_opt = sigma_optimum(test_sample, k, sig_range=[0.3, 0.6], cluster=False, method=method, abs_eig=True,
     #                         view_sample=True, view_sig=True, view_clusters=False)
 
-    # sig_opt = 0.433
+    sig_opt = 0.1
 
     # cluster_spectral(test_sample, k, sig_opt, method=method, view_sample=False, view_clusters=True)
     labels_2d, one_hot_2d = cluster_kmeans(test_sample, k, view_clusters=True, view_sample=True)
-    """
+#
 
 
 if __name__ == "__main__":
