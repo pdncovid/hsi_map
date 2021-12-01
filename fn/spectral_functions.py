@@ -87,6 +87,8 @@ def get_laplacian(mat, normalize=True, symmetry=True, view=False):
 
 
 def get_eigen(mat, sig=None, absolute=True, eigengap_only=False, view=False):
+    print('get eigen...')
+
     [eig_val, eig_vec] = np.linalg.eig(mat)
     if absolute:
         eig_val = np.abs(eig_val)
@@ -117,6 +119,7 @@ def sigma_optimum(test_sample, k, sig_range=None, cluster=False, method='Weiss',
     OPTIMAL SIGMA value for that k, where the sigma corresponding to the LARGEST Kth EIGEN-GAP wins.
     It makes the most sense compared to just going over everything for now because in some cases
     we get 1--2 clusters as optimal for sigma values."""
+    print('sigma sweep function...')
 
     def sigma_sweep(test_sample_, sig_range_, method_, abs_eig_):
         # set the diagonal of the affinity mat to zero or not
@@ -137,6 +140,8 @@ def sigma_optimum(test_sample, k, sig_range=None, cluster=False, method='Weiss',
         sig_list_ = np.linspace(sig_range_[0], sig_range_[1], 10)
 
         """ sigma sweep starts here """
+        print('sigma sweep starts here...')
+
         for num_ in range(len(sig_list_)):
             sig_ = sig_list_[num_]
             affinity = get_affinity(test_sample_, sig_, diag_zero=diag_zero_, compute_dist=True, view_mat=False,
@@ -183,6 +188,8 @@ def sigma_optimum(test_sample, k, sig_range=None, cluster=False, method='Weiss',
 
 def cluster_spectral(test_sample, k, sig, eigen_vec=None, return_2d=True, method='Ng and Weiss', view_clusters=False,
                      view_sample=False):
+    print('spectral clustering....')
+
     if 'weiss' in method.lower() or 'ng' in method.lower():
         diag_zero = True
     elif 'von' in method.lower() or 'luxburg' in method.lower():
@@ -215,6 +222,8 @@ def cluster_spectral(test_sample, k, sig, eigen_vec=None, return_2d=True, method
 
 def cluster_kmeans(test_sample, k, feature_mat=None, return_2d=True, view_clusters=False, view_sample=False,
                    title=None):
+    print('kmean clustering...')
+
     if feature_mat is None:
         feature_mat = np.transpose(test_sample, (1, 2, 0))
         feature_mat = np.reshape(feature_mat, (-1, feature_mat.shape[-1]))
@@ -253,6 +262,8 @@ def cluster_kmeans(test_sample, k, feature_mat=None, return_2d=True, view_cluste
 
 
 def dct_image(img1, scale_down, filter_size=8, view=False, title=None):
+    print('scale down image...')
+
     def dct_single(img, scale, filter_=8, view_=False, title_=None):
         if title_ is None:
             title_ = str(scale_down) + 'x compressed image after DCT-II\nFilter size: ' + str(filter_)
