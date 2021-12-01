@@ -93,6 +93,7 @@ def samples_get(data_initial, par, view=False, print_=False):
     input shape = stack size * (image shape)
     output shape = stack size * (sample shape) * no. of samples
     stack size may be None if only 1 map (frequency band) is passed as input."""
+    print('get samples...')
 
     if type(par) is int:
         rows, cols = par, par
@@ -137,6 +138,7 @@ def samples_zeros(data, view=False, print_=False):
     input shape = stack size * (sample shape) * no.samples before removing zeros
     output shape = stack size * (sample shape) * no.samples after removing zeros.
     stack size may be None if only 1 map (frequency band) is passed as input."""
+    print('remove full zero samples...')
 
     stacked = True if len(data.shape) == 4 else False
     data_ = np.copy(data)
@@ -161,6 +163,8 @@ def samples_zeros(data, view=False, print_=False):
 
 
 def convert_one_hot(labels, k, rank=True):
+    print('convert_one_hot...')
+
     targets = labels.reshape(-1)
     one_hot_ = np.eye(k)[targets].transpose()
     if not rank:

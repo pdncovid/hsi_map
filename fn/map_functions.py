@@ -7,6 +7,8 @@ import math
 def view_maps(dict_, fig_name):
     """Function to view a map on matplotlib. Inputs a dictionary.
     TODO: edit to input array and string"""
+    print('view maps...')
+
     field_names = list(dict_.keys())
     cols = 4
     rows = math.ceil(len(field_names) / cols)
@@ -50,6 +52,7 @@ def load_maps(folder='mat_files', file='imageKandy', view=False, out_array=False
 
 
 def plot_sample(test_sample):
+    print('plot samples...')
     col = 4
     row = math.ceil(test_sample.shape[0] / col)
     plt.figure(figsize=(col * 4, row * 4))
